@@ -93,22 +93,13 @@ Options:
 
 ## HowTo
 
-### Prepare env
+### Prepare env (uv)
 
-Prepare a Vitrual environment for your project and install requirements
+Requires Python 3.13. Use `uv` to manage the environment and lockfile.
 ```
-$ python -m venv venv
-```
-
-Switch to your venv 
-* on Linux   
-   `$ source venv/bin/activate`
-* on Windows   
-  `$ .\venv\Scripts\activate.bat`
-
-Install dependencies
-```
-$ python -m pip install -r requirements.txt
+$ uv sync --python 3.13            # install runtime deps
+$ uv sync --python 3.13 --extra dev  # include lint/test tools
+$ uv run python src/lunii-pm.py --help
 ```
 
 ### Build CLI executable
@@ -121,7 +112,7 @@ $ dist\lunii-pm.exe
 ### Install linux bash wrapper
 
 A bash wrapper for Linux systems exists in this `Lunii.Packs` repository. It is located at the root of this project and is named `lunii-packs`.
-This wrapper takes care of the activation and deactivation of the virtual environment, but you have to have followed the previous `Prepare env` paragraph.
+This wrapper takes care of the activation and deactivation of the virtual environment; the `uv sync` step above will create `.venv` that the wrapper can pick up.
 
 You can either directly use it from the command line in this directory:
 
