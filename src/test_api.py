@@ -1,9 +1,10 @@
 import unittest
+from uuid import UUID
+
 import hexdump
 
 from pkg.api import stories
-from pkg.api.device import *
-from pkg.api.constants import lunii_generic_key
+from pkg.api.device import StoryList, LuniiDevice, feed_stories, find_devices, story_name
 
 
 class testLunii_API(unittest.TestCase):
@@ -136,8 +137,6 @@ class testLunii_API(unittest.TestCase):
 
         with open("./test/_v3/.content/1BBA473C/sf/000/6CBA9EAA.mp3", "rb") as mp3_p:
             mp3_plain = mp3_p.read()
-        with open("./test/_v3/.content/1BBA473C/sf/000/6CBA9EAA", "rb") as mp3_c:
-            mp3_ciph = mp3_c.read()
 
         # ciphering test
         ciphered = my_v3.cipher(mp3_plain, my_v3.story_key, my_v3.story_iv)

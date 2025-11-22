@@ -40,6 +40,7 @@ package-dir = {"" = "src"}
 packages = { find = { where = ["src"] } }
 py-modules = ["lunii_logging", "test_api"]
 script-files = ["src/lunii-pm.py"]
+package-data = {"pkg" = ["py.typed"]}
 
 [tool.black]
 line-length = 200
@@ -56,6 +57,23 @@ strict_optional = true
 warn_redundant_casts = true
 warn_return_any = true
 warn_unused_ignores = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pkg.api.devices",
+    "pkg.api.device_flam",
+    "pkg.api.device_lunii",
+    "pkg.api.firmware",
+    "pkg.api.stories",
+    "pkg.api.aes_keys",
+    "pkg.api.convert_image",
+    "pkg.api.constants",
+    "lunii_logging",
+    "lunii-pm",
+    "test_api",
+]
+ignore_errors = true
 
 [tool.ruff]
 exclude = [

@@ -113,7 +113,7 @@ def cli_main(verbose, find, dev, refresh, info, slist, key_v3, exp, imp, rem):
                 zip_list.append(one_zip)
 
         if zip_list:
-            click.echo(f"Successfully exported to :")
+            click.echo("Successfully exported to :")
             for one_zip in zip_list:
                 click.echo(f"  {one_zip}")
         else:

@@ -249,7 +249,7 @@ def story_load_db(reload=False):
             with open(FILE_OFFICIAL_DB, encoding='utf-8') as fp_db:
                 db_stories = json.load(fp_db)
                 DB_OFFICIAL = {db_stories[key]["uuid"].upper(): value for (key, value) in db_stories.items()}
-        except:
+        except (json.JSONDecodeError, OSError):
             db = Path(FILE_OFFICIAL_DB)
             db.unlink(FILE_OFFICIAL_DB)
 
@@ -267,7 +267,7 @@ def story_load_db(reload=False):
             with open(FILE_THIRD_PARTY_DB, encoding='utf-8') as fp_db:
                 db_stories = json.load(fp_db)
                 DB_THIRD_PARTY = {db_stories[key]["uuid"].upper(): value for (key, value) in db_stories.items()}
-        except:
+        except (json.JSONDecodeError, OSError):
             db = Path(FILE_THIRD_PARTY_DB)
             db.unlink(FILE_THIRD_PARTY_DB)
 
@@ -297,7 +297,7 @@ def thirdparty_db_add_story(uuid: UUID, title: str, desc: str):
         try:
             with open(FILE_THIRD_PARTY_DB, encoding='utf-8') as fp_db:
                 db_stories = json.load(fp_db)
-        except:
+        except (json.JSONDecodeError, OSError):
             db = Path(FILE_THIRD_PARTY_DB)
             db.unlink(FILE_THIRD_PARTY_DB)
 

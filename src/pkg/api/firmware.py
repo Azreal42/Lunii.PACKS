@@ -1,7 +1,13 @@
 import requests
 
-from pkg.api.aes_keys import reverse_bytes
-from pkg.api.constants import *
+from pkg.api.constants import (
+    FAH_V1_FW_2_USB_VID_PID,
+    FAH_V2_V3_USB_VID_PID,
+    FLAM_V1,
+    LUNII_V1,
+    LUNII_V2,
+    LUNII_V3,
+)
 
 # anonymous fake lunii created to get v1 v2 fw
 V1V2_FAHID = "-NnUun90mQ56GosDyA3R"

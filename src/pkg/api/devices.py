@@ -1,8 +1,9 @@
 import platform
 import psutil
 import logging
+from pathlib import Path
 
-from pkg.api.constants import *
+from pkg.api.constants import LUNII_LOGGER
 from pkg.api.device_flam import is_flam
 from pkg.api.device_lunii import is_lunii
 
@@ -13,7 +14,7 @@ def find_devices(extra_path=None):
     dev_list = []
 
     current_os = platform.system()
-    logger.log(logging.INFO, f"Finding devices...")
+    logger.log(logging.INFO, "Finding devices...")
 
     if current_os == "Windows":
         # checking all drive letters

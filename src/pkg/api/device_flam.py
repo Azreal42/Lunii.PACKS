@@ -3,6 +3,7 @@ import shutil
 import zipfile
 import binascii
 import logging
+from pathlib import Path
 from tqdm import tqdm
 from uuid import UUID
 
@@ -10,7 +11,18 @@ import psutil
 import py7zr
 
 from pkg.api import stories
-from pkg.api.constants import *
+from pkg.api.constants import (
+    EXT_7z,
+    EXT_ZIP,
+    FLAM_USB_VID_PID,
+    FLAM_V1,
+    LUNII_LOGGER,
+    TQDM_BAR_FORMAT,
+    TYPE_FLAM_7Z,
+    TYPE_FLAM_ZIP,
+    TYPE_UNK,
+    UNDEF_DEV,
+)
 from pkg.api.device_lunii import secure_filename
 from pkg.api.stories import StoryList, Story, story_is_studio, story_is_lunii
 
@@ -157,7 +169,7 @@ class FlamDevice:
             # prepare for story analysis
             try:
                 full_uuid = UUID(str_uuid)
-            except (TypeError, ValueError) as e:
+            except (TypeError, ValueError):
                 self.logger.log(logging.DEBUG, f"Not a valid UUID - {str_uuid}")
                 continue
 
@@ -263,7 +275,7 @@ class FlamDevice:
             zip_contents = zip_file.namelist()
 
             if story_is_lunii(zip_contents) or story_is_studio(zip_contents):
-                self.logger.log(logging.ERROR, f"Archive seems to be made of Lunii story (not compatible with Flam)")
+                self.logger.log(logging.ERROR, "Archive seems to be made of Lunii story (not compatible with Flam)")
                 return False
 
             # getting UUID from path
@@ -290,7 +302,6 @@ class FlamDevice:
                 return False
 
             # decompressing story contents
-            short_uuid = str(new_uuid).upper()[28:]
             output_path = Path(self.mount_point).joinpath(f"{self.STORIES_BASEDIR}")
             if not output_path.exists():
                 output_path.mkdir(parents=True)
@@ -300,7 +311,7 @@ class FlamDevice:
             pbar = tqdm(iterable=zip_contents, total=len(zip_contents), bar_format=TQDM_BAR_FORMAT)
             for file in pbar:
                 if self.abort_process:
-                    self.logger.log(logging.WARNING, f"Import aborted, performing cleanup on current story...")
+                    self.logger.log(logging.WARNING, "Import aborted, performing cleanup on current story...")
                     self.__clean_up_story_dir(new_uuid)
                     return False
 
@@ -341,7 +352,7 @@ class FlamDevice:
             # reading all available files
             zip_contents = zip.getnames()
             if story_is_lunii(zip_contents) or story_is_studio(zip_contents):
-                self.logger.log(logging.ERROR, f"Archive seems to be made of Lunii story (not compatible with Flam)")
+                self.logger.log(logging.ERROR, "Archive seems to be made of Lunii story (not compatible with Flam)")
                 return False
 
             # reading all available files
@@ -369,7 +380,6 @@ class FlamDevice:
                 return False
 
             # decompressing story contents
-            short_uuid = str(new_uuid).upper()[28:]
             output_path = Path(self.mount_point).joinpath(f"{self.STORIES_BASEDIR}")
             if not output_path.exists():
                 output_path.mkdir(parents=True)
@@ -381,7 +391,7 @@ class FlamDevice:
             for index, (fname, bio) in pbar:
                 # abort requested ? early exit
                 if self.abort_process:
-                    self.logger.log(logging.WARNING, f"Import aborted, performing cleanup on current story...")
+                    self.logger.log(logging.WARNING, "Import aborted, performing cleanup on current story...")
                     self.__clean_up_story_dir(new_uuid)
                     return False
 
@@ -526,7 +536,7 @@ def feed_stories(root_path) -> StoryList[UUID]:
 
     story_list = StoryList()
 
-    logger.log(logging.INFO, f"Reading Flam loaded stories...")
+    logger.log(logging.INFO, "Reading Flam loaded stories...")
 
     # if there is a list
     if os.path.isfile(list_path):
@@ -536,7 +546,7 @@ def feed_stories(root_path) -> StoryList[UUID]:
                 one_uuid = UUID(uuid_str.strip())
                 logger.log(logging.DEBUG, f"> {str(one_uuid)}")
                 if one_uuid in story_list:
-                    logger.log(logging.WARNING, f"Found duplicate story, cleaning...")
+                    logger.log(logging.WARNING, "Found duplicate story, cleaning...")
                 else:
                     story_list.append(Story(one_uuid))
 
@@ -551,7 +561,7 @@ def feed_stories(root_path) -> StoryList[UUID]:
                 one_uuid = UUID(uuid_str.strip())
                 logger.log(logging.DEBUG, f"> {str(one_uuid)}")
                 if one_uuid in story_list:
-                    logger.log(logging.WARNING, f"Found duplicate story, cleaning...")
+                    logger.log(logging.WARNING, "Found duplicate story, cleaning...")
                 else:
                     story_list.append(Story(one_uuid, True))
 

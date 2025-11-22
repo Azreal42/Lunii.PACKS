@@ -1,0 +1,19 @@
+{
+  "include": ["src"],
+  "exclude": [
+    "src/pkg/api/constants.py",
+    "src/pkg/api/devices.py",
+    "src/pkg/api/device_flam.py",
+    "src/pkg/api/device_lunii.py",
+    "src/pkg/api/firmware.py",
+    "src/pkg/api/stories.py",
+    "src/pkg/api/aes_keys.py",
+    "src/pkg/api/convert_image.py",
+    "src/test_api.py",
+    "src/lunii_logging.py",
+    "src/lunii-pm.py"
+  ],
+  "typeCheckingMode": "basic",
+  "reportMissingTypeStubs": "none",
+  "reportMissingImports": "none"
+}

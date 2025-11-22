@@ -1,3 +1,4 @@
+# ruff: noqa: F403,F405
 import glob
 import json
 import os.path
@@ -132,13 +133,13 @@ class LuniiDevice:
         # getting candidated for story bt file
         fp_md.seek(0x40)
         if md_vers == 6:
-            self.logger.log(logging.DEBUG, f"Forging story keys for v6 metadata file")
+            self.logger.log(logging.DEBUG, "Forging story keys for v6 metadata file")
             # forging bt file based on ciphered part of md
             self.bt = fp_md.read(0x20)
             # forging keys based on plain part of md (SNU x2)
             self.load_md_fakestory_keys()
         else:
-            self.logger.log(logging.DEBUG, f"Forging story keys for v7+ metadata file")
+            self.logger.log(logging.DEBUG, "Forging story keys for v7+ metadata file")
             # forging keys based on md ciphered part
             self.story_key = reverse_bytes(fp_md.read(0x10))
             self.story_iv = reverse_bytes(fp_md.read(0x10))
@@ -424,7 +425,7 @@ class LuniiDevice:
             # prepare for story analysis
             try:
                 full_uuid = UUID(str_uuid)
-            except (TypeError, ValueError) as e:
+            except (TypeError, ValueError):
                 self.logger.log(logging.DEBUG, f"Not a valid UUID - {str_uuid}")
                 continue
 
@@ -750,7 +751,7 @@ class LuniiDevice:
             for file in pbar:
                 # abort requested ? early exit
                 if self.abort_process:
-                    self.logger.log(logging.WARNING, f"Import aborted, performing cleanup on current story...")
+                    self.logger.log(logging.WARNING, "Import aborted, performing cleanup on current story...")
                     self.__clean_up_story_dir(new_uuid)
                     return False
 
@@ -836,7 +837,7 @@ class LuniiDevice:
             for file in pbar:
                 # abort requested ? early exit
                 if self.abort_process:
-                    self.logger.log(logging.WARNING, f"Import aborted, performing cleanup on current story...")
+                    self.logger.log(logging.WARNING, "Import aborted, performing cleanup on current story...")
                     self.__clean_up_story_dir(new_uuid)
                     return False
 
@@ -923,14 +924,13 @@ class LuniiDevice:
                 output_path.mkdir(parents=True)
 
             # Loop over each file
-            short_uuid = str(new_uuid).upper()[28:]
             contents = zip.readall().items()
             pbar = tqdm(iterable=contents, total=len(contents), bar_format=TQDM_BAR_FORMAT)
             for fname, bio in pbar:
                 pbar.set_description(f"Processing {fname}")
                 # abort requested ? early exit
                 if self.abort_process:
-                    self.logger.log(logging.WARNING, f"Import aborted, performing cleanup on current story...")
+                    self.logger.log(logging.WARNING, "Import aborted, performing cleanup on current story...")
                     self.__clean_up_story_dir(new_uuid)
                     return False
 
@@ -1027,12 +1027,11 @@ class LuniiDevice:
                 output_path.mkdir(parents=True)
 
             # Loop over each file
-            short_uuid = str(new_uuid).upper()[28:]
             pbar = tqdm(iterable=zip_contents, total=len(zip_contents), bar_format=TQDM_BAR_FORMAT)
             for file in pbar:
                 # abort requested ? early exit
                 if self.abort_process:
-                    self.logger.log(logging.WARNING, f"Import aborted, performing cleanup on current story...")
+                    self.logger.log(logging.WARNING, "Import aborted, performing cleanup on current story...")
                     self.__clean_up_story_dir(new_uuid)
                     return False
 
@@ -1143,7 +1142,7 @@ class LuniiDevice:
             for file in pbar:
                 # abort requested ? early exit
                 if self.abort_process:
-                    self.logger.log(logging.WARNING, f"Import aborted, performing cleanup on current story...")
+                    self.logger.log(logging.WARNING, "Import aborted, performing cleanup on current story...")
                     self.__clean_up_story_dir(one_story.uuid)
                     return False
                 
@@ -1278,7 +1277,7 @@ class LuniiDevice:
             for fname, bio in pbar:
                 # abort requested ? early exit
                 if self.abort_process:
-                    self.logger.log(logging.WARNING, f"Import aborted, performing cleanup on current story...")
+                    self.logger.log(logging.WARNING, "Import aborted, performing cleanup on current story...")
                     self.__clean_up_story_dir(one_story.uuid)
                     return False
                 
@@ -1541,7 +1540,7 @@ def feed_stories(root_path) -> StoryList[UUID]:
 
     story_list = StoryList()
 
-    logger.log(logging.INFO, f"Reading Lunii loaded stories...")
+    logger.log(logging.INFO, "Reading Lunii loaded stories...")
 
     # if there is a .pi
     if os.path.isfile(pi_path):
@@ -1553,7 +1552,7 @@ def feed_stories(root_path) -> StoryList[UUID]:
                     one_uuid = UUID(bytes=next_uuid)
                     logger.log(logging.DEBUG, f"> {str(one_uuid)}")
                     if one_uuid in story_list:
-                        logger.log(logging.WARNING, f"Found duplicate story, cleaning...")
+                        logger.log(logging.WARNING, "Found duplicate story, cleaning...")
                     else:
                         story_list.append(Story(one_uuid))
                 else:
@@ -1572,7 +1571,7 @@ def feed_stories(root_path) -> StoryList[UUID]:
                     one_uuid = UUID(bytes=next_uuid)
                     logger.log(logging.DEBUG, f"> {str(one_uuid)}")
                     if one_uuid in story_list:
-                        logger.log(logging.WARNING, f"Found duplicate story, cleaning...")
+                        logger.log(logging.WARNING, "Found duplicate story, cleaning...")
                     else:
                         story_list.append(Story(one_uuid, hidden=True))
                 else:

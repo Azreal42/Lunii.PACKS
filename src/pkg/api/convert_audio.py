@@ -3,40 +3,44 @@ import platform
 import subprocess
 import tempfile
 from io import BytesIO
+from typing import Any, Optional, cast
 
 import ffmpeg
 from mutagen.mp3 import MP3, BitrateMode, MONO
 
 
-def tags_removal_required(audio_data):
+def tags_removal_required(audio_data: bytes) -> bool:
     audio_bytesio = BytesIO(audio_data)
     audio = MP3(audio_bytesio)
-    return audio.tags
+    return bool(audio.tags)
 
 
-def transcoding_required(filename: str, audio_data):
+def transcoding_required(filename: str, audio_data: bytes) -> bool:
     if not filename.lower().endswith(".mp3"):
         return True
 
     audio_bytesio = BytesIO(audio_data)
     audio = MP3(audio_bytesio)
-    # print(f"MP3 {audio.info.bitrate // 1000}Kbps ({audio.info.bitrate_mode} / {audio.info.mode}) for {filename}")
+    if audio.info is None:
+        return True
+
+    info = cast(Any, audio.info)
 
     # not the correct mode
-    if not audio.info.bitrate_mode in [BitrateMode.UNKNOWN, BitrateMode.VBR, BitrateMode.CBR]:
+    if info.bitrate_mode not in [BitrateMode.UNKNOWN, BitrateMode.VBR, BitrateMode.CBR]:
         return True
 
     # not a mono audio
-    if audio.info.mode != MONO:
+    if info.mode != MONO:
         return True
 
     # to be kept as it is
     return False
 
 
-def mp3_tag_cleanup(audio_data):
+def mp3_tag_cleanup(audio_data: bytes) -> bytes:
     audio_bytesio = BytesIO(audio_data)
-    audio = MP3(audio_bytesio)
+    MP3(audio_bytesio)
 
     # write the original MP3 data to a temporary file
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
@@ -57,8 +61,8 @@ def mp3_tag_cleanup(audio_data):
     return audio_data
 
 
-def audio_to_mp3(audio_data):
-    audio_mp3 = b""
+def audio_to_mp3(audio_data: bytes) -> bytes:
+    audio_mp3: bytes = b""
 
     # Construct the ffmpeg command using the ffmpeg-python syntax
     ffmpeg_cmd = (
