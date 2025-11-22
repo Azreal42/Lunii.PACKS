@@ -64,6 +64,7 @@ module = [
     "pkg.api.devices",
     "pkg.api.device_flam",
     "pkg.api.device_lunii",
+    "pkg.api.device",
     "pkg.api.firmware",
     "pkg.api.stories",
     "pkg.api.aes_keys",

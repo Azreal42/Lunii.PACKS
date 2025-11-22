@@ -5,6 +5,7 @@
     "src/pkg/api/devices.py",
     "src/pkg/api/device_flam.py",
     "src/pkg/api/device_lunii.py",
+    "src/pkg/api/device.py",
     "src/pkg/api/firmware.py",
     "src/pkg/api/stories.py",
     "src/pkg/api/aes_keys.py",

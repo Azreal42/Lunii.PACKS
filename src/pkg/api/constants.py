@@ -1,5 +1,6 @@
 import os
 import shutil
+from collections.abc import Iterable
 from pathlib import Path
 
 # this logger MUST not be used from worker thread.
@@ -8,17 +9,17 @@ REFRESH_CACHE = False
 
 STORY_TRANSCODING_SUPPORTED = shutil.which("ffmpeg") is not None
 
-def toggle_refresh_cache():
+def toggle_refresh_cache() -> None:
     global REFRESH_CACHE
     REFRESH_CACHE = True
 
 
-def vectkey_to_bytes(key_vect):
+def vectkey_to_bytes(key_vect: Iterable[int]) -> bytes:
     joined = [k.to_bytes(4, 'little') for k in key_vect]
     return b''.join(joined)
 
 
-def lunii_tea_rounds(buffer):
+def lunii_tea_rounds(buffer: bytes) -> int:
     return int(1 + 52 / (len(buffer)/4))
 
 # external flash hardcoded value

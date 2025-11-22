@@ -13,7 +13,7 @@ from pkg.api.stories import story_load_db
 CLI_VERSION = "2.1.2"
 
 
-def exit_help():
+def exit_help() -> None:
     ctx = click.get_current_context()
     click.echo(ctx.get_help())
     ctx.exit()
@@ -30,7 +30,7 @@ def exit_help():
 @click.option('--pack-export', '-pe', "exp", type=str, default=None, help="Export selected story to an archive (or use ALL)")
 @click.option('--pack-import', '-pi', "imp", type=click.Path(exists=True, file_okay=True, dir_okay=True), default=None, help="Import a story archive in the Lunii")
 @click.option('--pack-remove', '-pr', "rem", type=str, default=None, help="Remove a story from the Lunii")
-def cli_main(verbose, find, dev, refresh, info, slist, key_v3, exp, imp, rem):
+def cli_main(verbose: bool, find: bool, dev: str | None, refresh: bool, info: bool, slist: bool, key_v3: str, exp: str | None, imp: str | None, rem: str | None) -> None:
     
     # Initialize logger
     initialize_logger(logging.INFO)

@@ -1,17 +1,19 @@
-import platform
-import psutil
 import logging
+import platform
 from pathlib import Path
+from typing import List
+
+import psutil
 
 from pkg.api.constants import LUNII_LOGGER
 from pkg.api.device_flam import is_flam
 from pkg.api.device_lunii import is_lunii
 
 
-def find_devices(extra_path=None):
+def find_devices(extra_path: str | None = None) -> List[Path]:
     logger = logging.getLogger(LUNII_LOGGER)
 
-    dev_list = []
+    dev_list: List[Path] = []
 
     current_os = platform.system()
     logger.log(logging.INFO, "Finding devices...")

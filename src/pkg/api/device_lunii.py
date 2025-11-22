@@ -288,7 +288,8 @@ class LuniiDevice:
             repr_str += f"- firmware : v{self.fw_vers_major}.{self.fw_vers_minor}\n"
         else:
             repr_str += f"- firmware : v{self.fw_vers_major}.{self.fw_vers_minor}.{self.fw_vers_subminor}\n"
-        repr_str += f"- SNU      : {binascii.hexlify(self.snu_hex, ' ')}\n"
+        snu_bytes = self.snu_hex if isinstance(self.snu_hex, (bytes, bytearray)) else str(self.snu_hex).encode()
+        repr_str += f"- SNU      : {binascii.hexlify(snu_bytes, ' ')}\n"
         repr_str += f"- dev key  : {dev_key}\n"
         if self.device_version == LUNII_V3:
             repr_str += f"- dev iv   : {dev_iv}\n"

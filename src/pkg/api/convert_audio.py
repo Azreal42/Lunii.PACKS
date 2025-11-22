@@ -3,7 +3,7 @@ import platform
 import subprocess
 import tempfile
 from io import BytesIO
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 import ffmpeg
 from mutagen.mp3 import MP3, BitrateMode, MONO
