@@ -1,9 +1,12 @@
 import unittest
+from pathlib import Path
 from uuid import UUID
 
 import hexdump
+import pytest
 
 from pkg.api import stories
+from pkg.api.stories import Story
 from pkg.api.device import StoryList, LuniiDevice, feed_stories, find_devices, story_name
 
 
@@ -15,6 +18,9 @@ class testLunii_API(unittest.TestCase):
         count = 0
         stories.story_load_db()
         local_DB = stories.UUID_DB
+
+        if not local_DB:
+            pytest.skip("No official DB available")
         
         for key in local_DB.keys():
             if local_DB[key].get('title'):
@@ -33,6 +39,9 @@ class testLunii_API(unittest.TestCase):
             print(f"{story} - {story_name(story)}")
 
     def test_3_device(self):
+        if not Path("./test/_v3/").exists():
+            pytest.skip("v3 fixture directory missing")
+
         my_dev = LuniiDevice("./test/_v3/")
         print(my_dev)
 
@@ -54,7 +63,7 @@ class testLunii_API(unittest.TestCase):
         uuid_b = UUID("22137B29-8646-4335-8069-4A4C9A2D7E89")
         uuid_c = UUID("9C836C24-34C4-4CC1-B9E6-D8646C8D9CF1")
 
-        slist.append(uuid_a)
+        slist.append(Story(uuid_a))
 
         # check full eq with -
         assert "9D9521E5-84AC-4CC8-9B09-8D0AFFB5D68A" in slist
@@ -82,7 +91,7 @@ class testLunii_API(unittest.TestCase):
         assert ulist[0] == uuid_a
 
         # single match
-        slist.append(uuid_b)
+        slist.append(Story(uuid_b))
         ulist = slist.full_uuid("1E584AC")
         assert len(ulist) == 1
         assert ulist[0] == uuid_a
@@ -93,16 +102,21 @@ class testLunii_API(unittest.TestCase):
         assert len(ulist) == 0
 
         # match multiple
-        slist.append(uuid_c)
+        slist.append(Story(uuid_c))
         ulist = slist.full_uuid("46")
         assert len(ulist) >= 1
 
     def test_v2crypto(self):
+        bt_path = Path("./test/_v2/.content/1BBA473C/bt")
+        ri_path = Path("./test/_v2/.content/1BBA473C/ri")
+        if not bt_path.exists() or not ri_path.exists():
+            pytest.skip("v2 crypto fixtures missing")
+
         my_dev = LuniiDevice("./test/_v2")
 
-        with open("./test/_v2/.content/1BBA473C/bt", "rb") as bt:
+        with open(bt_path, "rb") as bt:
             buffer_bt = bt.read()
-        with open("./test/_v2/.content/1BBA473C/ri", "rb") as ri:
+        with open(ri_path, "rb") as ri:
             buffer_ri = ri.read(0x40)
 
         # deciphering test
@@ -133,9 +147,13 @@ class testLunii_API(unittest.TestCase):
         assert ciphered == buffer_bt
 
     def test_v3crypto_1(self):
+        mp3_plain_path = Path("./test/_v3/.content/1BBA473C/sf/000/6CBA9EAA.mp3")
+        if not mp3_plain_path.exists():
+            pytest.skip("v3 crypto fixtures missing")
+
         my_v3 = LuniiDevice("./test/_v3")
 
-        with open("./test/_v3/.content/1BBA473C/sf/000/6CBA9EAA.mp3", "rb") as mp3_p:
+        with open(mp3_plain_path, "rb") as mp3_p:
             mp3_plain = mp3_p.read()
 
         # ciphering test
@@ -156,6 +174,11 @@ class testLunii_API(unittest.TestCase):
         assert mp3_plain == plain
 
     def test_v3crypto_2(self):
+        bt_path = Path("./test/_v3/.content/1BBA473C/bt")
+        keys_path = Path("./test/_v3/odaneel.keys")
+        if not bt_path.exists() or not keys_path.exists():
+            pytest.skip("v3 crypto fixtures missing")
+
         my_v3 = LuniiDevice("./test/_v3", "./test/_v3/odaneel.keys")
 
         assert my_v3.device_key

@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import shutil
@@ -47,6 +48,18 @@ class StudioStory:
         if story_json:
             self.load(story_json)
 
+    @classmethod
+    def from_dict(cls, story_json: dict) -> "StudioStory":
+        story = cls()
+        story.load(story_json)
+        return story
+
+    @classmethod
+    def from_json(cls, story_json: str) -> "StudioStory":
+        story = cls()
+        story.load(json.loads(story_json))
+        return story
+
     @property
     def name(self):
         return self.title
@@ -64,13 +77,15 @@ class StudioStory:
         return None
     
     def load(self, story_json):
-        self.format_version = story_json.get('format')
-        self.pack_version = story_json.get('version')
-        self.title = story_json.get('title')
-        self.description = story_json.get('description')
+        payload = copy.deepcopy(story_json)
+
+        self.format_version = payload.get('format')
+        self.pack_version = payload.get('version')
+        self.title = payload.get('title')
+        self.description = payload.get('description')
 
         # looping stage nodes
-        self.js_snodes = story_json.get('stageNodes')
+        self.js_snodes = payload.get('stageNodes')
         for snode in self.js_snodes:
             n_uuid = UUID(snode.get('uuid'))
             if not self.uuid:
@@ -96,7 +111,7 @@ class StudioStory:
 
         # looping action nodes
         absolute_index = 0
-        self.js_anodes = story_json.get('actionNodes')
+        self.js_anodes = payload.get('actionNodes')
         for anode in self.js_anodes:
             anode["global_index"] = absolute_index
             absolute_index += len(anode.get("options"))
@@ -205,6 +220,19 @@ class StudioStory:
             li_buffer += b"\x00"
 
         return li_buffer
+
+    def to_dict(self) -> dict:
+        return {
+            "format": self.format_version,
+            "version": self.pack_version,
+            "title": self.title,
+            "description": self.description,
+            "stageNodes": self.js_snodes or [],
+            "actionNodes": self.js_anodes or [],
+        }
+
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict(), indent=2)
 
     def write_bt(self, path_ni):
         pass
